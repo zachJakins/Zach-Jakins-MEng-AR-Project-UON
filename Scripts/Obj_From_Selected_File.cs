@@ -41,10 +41,10 @@ public class Obj_From_Selected_File : MonoBehaviour
                 }
 
 
-//#if UNITY_EDITOR
+#if UNITY_EDITOR//Use Aspose when in Unity Editor.
                 var toOBJ= new Aspose.ThreeD.Scene(objPath);
                 toOBJ.Save(objPath, FileFormat.WavefrontOBJ);
-//#endif
+#endif
                 //create obj loader
                 OBJLoader objLoader = new();
                 loadedObject = objLoader.Load(objPath);//load obj                  
