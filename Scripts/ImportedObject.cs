@@ -11,13 +11,16 @@ public class ImportedObject : MonoBehaviour
     public int childrenCount;
     public string[] childrenName;
     public GameObject[] children;
-    public ARTrackedImage trackedImage;
+    Bounds[] bounds;
+    public Vector3[] componentMeasurements;
+    public Vector3[] componentCentres;
     public bool Original;
+
+    public ARTrackedImage trackedImage;
 
     private void Start()
     {
         TextMeshProUGUI[] presentTextMeshObjects = FindObjectsOfType<TextMeshProUGUI>();//list all text mesh objects in the scene
-        trackedImage = FindObjectOfType<ARTrackedImage>();
 
         ImportedObject[] allImportedObjects = FindObjectsOfType<ImportedObject>();
         if (allImportedObjects.Length < 2)
@@ -47,7 +50,7 @@ public class ImportedObject : MonoBehaviour
             {
                 float colour = (i + 1.0f) * (1.0f / childrenCount);
                 Shader partShader = Shader.Find("Standard");
-                Renderer partRend = children[i].GetComponent<Renderer>();
+                Renderer partRend = children[i].GetComponentInChildren<Renderer>();
                 partRend.material.color = Random.ColorHSV(colour, colour, 1, 1, 1, 1);
                 partRend.material.shader = partShader;
 
@@ -59,11 +62,13 @@ public class ImportedObject : MonoBehaviour
 
     private void Update()
     {
+
         UpdateARModel();
         Debug.Log("Attempted Model Update");
+
     }
 
-    public void OnDestroy()
+    private void OnDestroy()
     {
         if (Original)
         {
@@ -79,21 +84,44 @@ public class ImportedObject : MonoBehaviour
         }
 
     }
-    public void SelectedObjectDetails()
+    private void SelectedObjectDetails()
     {
         childrenCount = this.transform.childCount;//find all of its children
         Debug.Log(this);
+
         childrenName = new string[childrenCount];
         children = new GameObject[childrenCount];
+        bounds = new Bounds[childrenCount];
+        componentMeasurements = new Vector3[childrenCount];
+        componentCentres = new Vector3[childrenCount];
+
         for (int i = 0; i < childrenCount; i++)
         {
-            childrenName[i] = this.transform.GetChild(i).name;
+            childrenName[i] = this.transform.GetChild(i).name;//find the object names
+
+            //get each mesh boundaries sizes and centres
+            bounds[i] = this.transform.GetChild(i).GetComponent<MeshFilter>().mesh.bounds;
+            componentMeasurements[i] = bounds[i].size;
+            componentCentres[i] = bounds[i].center;
+
+            //make a new object with the same name as our current child
+            GameObject spawnObject = new GameObject(childrenName[i]);
+            //this new object then becomes a child of our wavefrontobject
+            spawnObject.transform.parent = this.transform;
+            //at which point we move it to the centre of our mesh
+            spawnObject.transform.position = componentCentres[i];
+            //then the component becomes child to this new transform meaning it will be rotated/scaled/translated about its bound centre
+            this.transform.GetChild(i).parent = spawnObject.transform;
+            //correct the sibling index since otherwise it would be at the bottom of our lsit
+            spawnObject.transform.SetSiblingIndex(i);
+
+            //children refers to the transform that is centred on our bounds
             children[i] = this.transform.GetChild(i).gameObject;
-            Debug.Log(childrenName[i]);
+
         }
 
     }
-    public void populateDetailText()
+    private void populateDetailText()
     {
         detailText.alignment = TextAlignmentOptions.TopLeft;
         string outputtedText = "Current Object Details:\n" +
@@ -108,7 +136,6 @@ public class ImportedObject : MonoBehaviour
 
     public void UpdateARModel()
     {
-        ARTrackedImage trackedImage = null;
         trackedImage = FindAnyObjectByType<ARTrackedImage>();
         if (trackedImage != null)
         {
@@ -119,7 +146,7 @@ public class ImportedObject : MonoBehaviour
             ImportedObject instantiatedObject = Instantiate(this, trackedImage.transform);
             Debug.Log("Transform Pos: " + instantiatedObject.transform.position);
         }
-        else DebugText.Log("No AR Image in Scene");
+        else Debug.Log("No AR Image in Scene");
     }
     public static ImportedObject FindOriginalObject()//Finds the original object and returns it
     {

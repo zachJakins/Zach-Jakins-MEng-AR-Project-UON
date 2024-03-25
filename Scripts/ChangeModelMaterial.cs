@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -25,12 +24,12 @@ public class ChangeModelMaterial : MonoBehaviour
         //if we pass the entire model
         foreach (Transform child in  objectToTransform.transform)
         {
-            child.GetComponent<Renderer>().material.shader = materialShader;
+            child.GetComponentInChildren<Renderer>().material.shader = materialShader;
         }
         //if we pass a specific component
-        if(objectToTransform.GetComponent<Renderer>())
+        if(objectToTransform.GetComponentInChildren<Renderer>())
         {
-            objectToTransform.GetComponent<Renderer>().material.shader = materialShader;
+            objectToTransform.GetComponentInChildren<Renderer>().material.shader = materialShader;
         }
         
     }

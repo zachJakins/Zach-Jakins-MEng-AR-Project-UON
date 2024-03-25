@@ -25,7 +25,7 @@ public class ChangeModelColour : MonoBehaviour
        colorPickerInstance.onColorChange.AddListener(colourChange);
         if (controller.TypeOfTransform == SpecialCanvasController.TransformType.SpecificComponent)
         {
-            colorPickerInstance.color = controller.ComponentToTransform.GetComponent<Renderer>().material.color;//set it so that the colour picker starts as the colour of the specific component.
+            colorPickerInstance.color = controller.ComponentToTransform.GetComponentInChildren<Renderer>().material.color;//set it so that the colour picker starts as the colour of the specific component.
         }
     }
     void colourChange(Color _color)
@@ -33,7 +33,7 @@ public class ChangeModelColour : MonoBehaviour
         Debug.Log("Color Change");
         if (controller.TypeOfTransform == SpecialCanvasController.TransformType.SpecificComponent)
         {
-            controller.ComponentToTransform.GetComponent<Renderer>().material.color = colorPickerInstance.color;//will replace the specific colour of the specific component
+            controller.ComponentToTransform.GetComponentInChildren<Renderer>().material.color = colorPickerInstance.color;//will replace the specific colour of the specific component
         }
         else if (controller.TypeOfTransform == SpecialCanvasController.TransformType.EntireModel)
         {
@@ -43,7 +43,7 @@ public class ChangeModelColour : MonoBehaviour
             //colours every single child
             foreach(GameObject child in foundObject.children)
             {
-                child.GetComponent<Renderer>().material.color = colorPickerInstance.color;
+                child.GetComponentInChildren<Renderer>().material.color = colorPickerInstance.color;
             }
         }
         else Debug.Log("Unknown Model In Colour Changer");

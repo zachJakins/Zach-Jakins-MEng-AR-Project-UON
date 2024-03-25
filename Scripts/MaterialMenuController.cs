@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using TMPro;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.UI;
@@ -21,8 +23,10 @@ public class MaterialMenuController : MonoBehaviour
     public List<string> shaderNames;
     public List<Shader> shaderList;
 
+
     private void OnEnable()
     {
+
         foreach (Transform child in content)
         {
             GameObject.Destroy(child.gameObject);

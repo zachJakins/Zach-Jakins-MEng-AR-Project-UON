@@ -18,12 +18,12 @@ public class ShoworHideWindow : MonoBehaviour
     {
         DebugText.Log("Started");
 
-#if UNITY_EDITOR //PC Version
-        FileBrowser.SetFilters(false, new FileBrowser.Filter("Obj Files", ".obj"), new FileBrowser.Filter("3D Model Formats", ".obj",".fbx", ".stl", ".3DS", ".glTF"));
+//#if UNITY_EDITOR //PC Version
+       // FileBrowser.SetFilters(false, new FileBrowser.Filter("Obj Files", ".obj"), new FileBrowser.Filter("3D Model Formats", ".obj",".fbx", ".stl", ".3DS", ".glTF"));
 
-#else //if android
+//#else //if android
         FileBrowser.SetFilters(false, new FileBrowser.Filter("Obj Files", ".obj"));
-#endif
+//#endif
         FileBrowser.SetDefaultFilter("Obj Files");
 
         if (FileBrowser.CheckPermission() == FileBrowser.Permission.Denied)

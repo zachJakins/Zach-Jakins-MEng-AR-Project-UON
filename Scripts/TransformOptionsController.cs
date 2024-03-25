@@ -69,6 +69,7 @@ public class TransformOptionsController : MonoBehaviour
         topText.text = "Transform Component: " + ComponentToTransform.name;
         addButtonToList(ButtonType.ChangeColour);
         addButtonToList(ButtonType.ChangeMaterial);
+        addButtonToList(ButtonType.Scale);
         addButtonToList(ButtonType.Translate);
         addButtonToList(ButtonType.Rotate);
         addButtonToList(ButtonType.TurnOffControls);
