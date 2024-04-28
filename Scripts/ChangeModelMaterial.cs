@@ -13,11 +13,13 @@ public class ChangeModelMaterial : MonoBehaviour
     public Image buttonImage;
     public GameObject objectToTransform;
     public Shader materialShader;
+    private ControlCutaway cutawayControls;
 
     void Start()
     {
         button = GetComponent<Button>();
         button.onClick.AddListener(OnClick);
+        cutawayControls = FindObjectOfType<ControlCutaway>(true);
     }
     void OnClick()
     {
@@ -31,6 +33,8 @@ public class ChangeModelMaterial : MonoBehaviour
         {
             objectToTransform.GetComponentInChildren<Renderer>().material.shader = materialShader;
         }
-        
+        cutawayControls.transform.gameObject.SetActive(false);
+
+
     }
 }

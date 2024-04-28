@@ -33,7 +33,8 @@ public class ChangeModelColour : MonoBehaviour
         Debug.Log("Color Change");
         if (controller.TypeOfTransform == SpecialCanvasController.TransformType.SpecificComponent)
         {
-            controller.ComponentToTransform.GetComponentInChildren<Renderer>().material.color = colorPickerInstance.color;//will replace the specific colour of the specific component
+            controller.ComponentToTransform.GetComponentInChildren<Renderer>().material.SetColor("_Color", colorPickerInstance.color);//will replace the specific colour of the specific component
+            controller.ComponentToTransform.GetComponentInChildren<Renderer>().material.SetColor("_WireColor", colorPickerInstance.color);//for wireframe
         }
         else if (controller.TypeOfTransform == SpecialCanvasController.TransformType.EntireModel)
         {
@@ -43,7 +44,8 @@ public class ChangeModelColour : MonoBehaviour
             //colours every single child
             foreach(GameObject child in foundObject.children)
             {
-                child.GetComponentInChildren<Renderer>().material.color = colorPickerInstance.color;
+                child.GetComponentInChildren<Renderer>().material.SetColor("_Color", colorPickerInstance.color);
+                child.GetComponentInChildren<Renderer>().material.SetColor("_WireColor", colorPickerInstance.color);
             }
         }
         else Debug.Log("Unknown Model In Colour Changer");

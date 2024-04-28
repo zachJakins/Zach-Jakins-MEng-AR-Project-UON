@@ -22,7 +22,8 @@ public class TransformOptionsController : MonoBehaviour
         Translate,
         Rotate,
         TurnOffControls,
-        Scale
+        Scale,
+        Cutaway
     }
 
     private void OnEnable()
@@ -31,8 +32,7 @@ public class TransformOptionsController : MonoBehaviour
         TypeOfTransform = controller.TypeOfTransform;
         ComponentToTransform = controller.ComponentToTransform;
 
-        SpecificText temp = GetComponentInChildren<SpecificText>();
-        topText = temp.GetComponent<TextMeshProUGUI>();
+        topText = GetComponentInChildren<SpecificText>().GetComponent<TextMeshProUGUI>();
         topText.text = "WORKED";
 
         //deletes existing list elements when a new object is 
@@ -61,6 +61,7 @@ public class TransformOptionsController : MonoBehaviour
         addButtonToList(ButtonType.Scale);
         addButtonToList(ButtonType.Translate);
         addButtonToList(ButtonType.Rotate);
+        addButtonToList(ButtonType.Cutaway);
         addButtonToList(ButtonType.TurnOffControls);
     }
     void SpecificObjectTransform()
@@ -72,6 +73,7 @@ public class TransformOptionsController : MonoBehaviour
         addButtonToList(ButtonType.Scale);
         addButtonToList(ButtonType.Translate);
         addButtonToList(ButtonType.Rotate);
+        addButtonToList(ButtonType.Cutaway);
         addButtonToList(ButtonType.TurnOffControls);
 
     }
@@ -115,6 +117,12 @@ public class TransformOptionsController : MonoBehaviour
             GameObject listElement = Instantiate(ListItemPrefab, TransformOptionsContentPanel) as GameObject;
             listElement.transform.GetComponentInChildren<TextMeshProUGUI>().text = "Scale";
             listElement.AddComponent<ScaleModel>();
+        }
+        else if (_type == ButtonType.Cutaway)
+        {
+            GameObject listElement = Instantiate(ListItemPrefab, TransformOptionsContentPanel) as GameObject;
+            listElement.transform.GetComponentInChildren<TextMeshProUGUI>().text = "Cutaway";
+            listElement.AddComponent<CutawayModel>();
         }
     }
 

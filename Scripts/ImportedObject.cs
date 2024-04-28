@@ -2,7 +2,10 @@ using SimpleFileBrowser;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem.HID;
+using UnityEngine.UIElements;
 using UnityEngine.XR.ARFoundation;
 
 public class ImportedObject : MonoBehaviour
@@ -14,14 +17,24 @@ public class ImportedObject : MonoBehaviour
     Bounds[] bounds;
     public Vector3[] componentMeasurements;
     public Vector3[] componentCentres;
+
+    public Vector3 modelMeasurement;
+    public Vector3 modelCentre;
+    public Vector3 angles;
+
+    public Vector3 planeCentre;
+
     public bool Original;
+    public bool showPlane = true;
 
     public ARTrackedImage trackedImage;
 
     private void Start()
     {
-        TextMeshProUGUI[] presentTextMeshObjects = FindObjectsOfType<TextMeshProUGUI>();//list all text mesh objects in the scene
+        
 
+        TextMeshProUGUI[] presentTextMeshObjects = FindObjectsOfType<TextMeshProUGUI>();//list all text mesh objects in the scene
+        
         ImportedObject[] allImportedObjects = FindObjectsOfType<ImportedObject>();
         if (allImportedObjects.Length < 2)
         {
@@ -49,22 +62,53 @@ public class ImportedObject : MonoBehaviour
             for (int i = 0; i < childrenCount; i++)
             {
                 float colour = (i + 1.0f) * (1.0f / childrenCount);
-                Shader partShader = Shader.Find("Standard");
+                Shader partShader = Shader.Find("Cutaway Shader");//instantiate with cutaway shader
                 Renderer partRend = children[i].GetComponentInChildren<Renderer>();
-                partRend.material.color = Random.ColorHSV(colour, colour, 1, 1, 1, 1);
+                partRend.material.SetColor("_Color", Color.HSVToRGB(colour, 1, 1));
                 partRend.material.shader = partShader;
-
-
+                children[i].transform.GetChild(0).AddComponent<MeshCollider>();//add box collider for raycast
             }
         }
+        Bounds bounds = new Bounds(this.transform.position, Vector3.zero);
+        foreach (Renderer rend in GetComponentsInChildren<Renderer>())
+        {
+            bounds.Encapsulate(rend.bounds);
+        }
+        modelCentre = bounds.center;
+        modelMeasurement = bounds.size;
 
+        Debug.Log(modelCentre + " " + Original);
+
+        foreach (Renderer rend in GetComponentsInChildren<Renderer>())
+        {
+            rend.material.SetVector("_CutPlaneCentre", modelCentre);
+        }
+
+        if (!Original && showPlane)
+        {
+            if (planeCentre != Vector3.zero)
+            {
+                GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                Destroy(plane.transform.GetComponent<BoxCollider>());
+                plane.transform.localScale = new Vector3(10.0f, 10.0f, 0.001f);
+                plane.transform.GetComponent<Renderer>().material.SetFloat("_Mode", 3);
+                plane.transform.GetComponent<Renderer>().material.SetColor("_Color", new Color(1.0f,0.0f,0.0f,0.015f));
+                plane.transform.rotation *= Quaternion.FromToRotation(plane.transform.forward,planeCentre.normalized);
+                plane.transform.position = planeCentre + modelCentre;
+                plane.transform.parent = this.transform;
+            }
+        }
     }
+
+    
 
     private void Update()
     {
 
         UpdateARModel();
         Debug.Log("Attempted Model Update");
+        //determine the centre and measurements of our entire model
+
 
     }
 
@@ -133,7 +177,6 @@ public class ImportedObject : MonoBehaviour
         }
         detailText.text = outputtedText;
     }
-
     public void UpdateARModel()
     {
         trackedImage = FindAnyObjectByType<ARTrackedImage>();
@@ -164,4 +207,31 @@ public class ImportedObject : MonoBehaviour
         }
         return foundObject;
     }
+    public void DrawPlane(Vector3 position, Vector3 normal)
+    {
+        Vector3 v3;
+
+        if (normal.normalized != Vector3.forward)
+            v3 = Vector3.Cross(normal, Vector3.forward).normalized * normal.magnitude;
+        else
+            v3 = Vector3.Cross(normal, Vector3.up).normalized * normal.magnitude; ;
+
+        var corner0 = position + v3;
+        var corner2 = position - v3;
+        var q = Quaternion.AngleAxis(90.0f, normal);
+        v3 = q * v3;
+        var corner1 = position + v3;
+        var corner3 = position - v3;
+
+        Plane plane = new Plane(normal,position);
+
+        Debug.DrawLine(corner0, corner2);
+        Debug.DrawLine(corner1, corner3);
+        Debug.DrawLine(corner0, corner1);
+        Debug.DrawLine(corner1, corner2);
+        Debug.DrawLine(corner2, corner3);
+        Debug.DrawLine(corner3, corner0);
+
+    }
+
 }
