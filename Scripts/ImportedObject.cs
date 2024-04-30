@@ -77,25 +77,23 @@ public class ImportedObject : MonoBehaviour
         modelCentre = bounds.center;
         modelMeasurement = bounds.size;
 
-        Debug.Log(modelCentre + " " + Original);
-
         foreach (Renderer rend in GetComponentsInChildren<Renderer>())
         {
             rend.material.SetVector("_CutPlaneCentre", modelCentre);
         }
 
-        if (!Original && showPlane)
+        if (!Original && showPlane)//only show plane on the clone
         {
-            if (planeCentre != Vector3.zero)
+            if (planeCentre != Vector3.zero)//when centre is not 0 0 0
             {
-                GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                Destroy(plane.transform.GetComponent<BoxCollider>());
-                plane.transform.localScale = new Vector3(10.0f, 10.0f, 0.001f);
-                plane.transform.GetComponent<Renderer>().material.SetFloat("_Mode", 3);
-                plane.transform.GetComponent<Renderer>().material.SetColor("_Color", new Color(1.0f,0.0f,0.0f,0.015f));
-                plane.transform.rotation *= Quaternion.FromToRotation(plane.transform.forward,planeCentre.normalized);
-                plane.transform.position = planeCentre + modelCentre;
-                plane.transform.parent = this.transform;
+                GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Cube);//create a cube
+                Destroy(plane.transform.GetComponent<BoxCollider>()); //destroy its collider so it doesnt raycast
+                plane.transform.localScale = new Vector3(10.0f, 10.0f, 0.001f);//make a plane
+                plane.transform.GetComponent<Renderer>().material.SetFloat("_Mode", 3); //set transparaent
+                plane.transform.GetComponent<Renderer>().material.SetColor("_Color", new Color(1.0f,0.0f,0.0f,0.015f)); //make red
+                plane.transform.rotation *= Quaternion.FromToRotation(plane.transform.forward,planeCentre.normalized);//rotate to correct angle
+                plane.transform.position = planeCentre + modelCentre;//move to correct place
+                plane.transform.parent = this.transform;//place below ARTracekdImage
             }
         }
     }
@@ -107,7 +105,6 @@ public class ImportedObject : MonoBehaviour
 
         UpdateARModel();
         Debug.Log("Attempted Model Update");
-        //determine the centre and measurements of our entire model
 
 
     }
@@ -206,32 +203,6 @@ public class ImportedObject : MonoBehaviour
             }
         }
         return foundObject;
-    }
-    public void DrawPlane(Vector3 position, Vector3 normal)
-    {
-        Vector3 v3;
-
-        if (normal.normalized != Vector3.forward)
-            v3 = Vector3.Cross(normal, Vector3.forward).normalized * normal.magnitude;
-        else
-            v3 = Vector3.Cross(normal, Vector3.up).normalized * normal.magnitude; ;
-
-        var corner0 = position + v3;
-        var corner2 = position - v3;
-        var q = Quaternion.AngleAxis(90.0f, normal);
-        v3 = q * v3;
-        var corner1 = position + v3;
-        var corner3 = position - v3;
-
-        Plane plane = new Plane(normal,position);
-
-        Debug.DrawLine(corner0, corner2);
-        Debug.DrawLine(corner1, corner3);
-        Debug.DrawLine(corner0, corner1);
-        Debug.DrawLine(corner1, corner2);
-        Debug.DrawLine(corner2, corner3);
-        Debug.DrawLine(corner3, corner0);
-
     }
 
 }

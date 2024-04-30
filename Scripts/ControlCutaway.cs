@@ -21,6 +21,7 @@ public class ControlCutaway : MonoBehaviour
 
     private float scale = 1;
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,7 +41,7 @@ public class ControlCutaway : MonoBehaviour
 
     public void OnEnable()
     {
-        foreach (Renderer child in objectToCutaway.transform.GetComponentsInChildren<Renderer>())
+        foreach (Renderer child in objectToCutaway.transform.GetComponentsInChildren<Renderer>(true))
         {
             child.material.SetVector("_CutPlanePos", cutawayPlaneXYZ * scale);
         }
@@ -48,13 +49,17 @@ public class ControlCutaway : MonoBehaviour
 
     public void Update()
     {
-        ImportedObject.FindOriginalObject().planeCentre = cutawayPlaneXYZ * scale ; 
+        ImportedObject.FindOriginalObject().planeCentre = cutawayPlaneXYZ * scale ;
+        foreach (Renderer child in objectToCutaway.transform.GetComponentsInChildren<Renderer>(true))
+        {
+            child.material.SetVector("_CutPlanePos", cutawayPlaneXYZ * scale);
+        }
     }
 
     private void ButtonPress()//whatever our current
     {
         float cutDir = objectToCutaway.GetComponentInChildren<Renderer>().material.GetFloat("_CutDir");//takes cut direction of first object in hierarchy
-        foreach (Renderer child in objectToCutaway.transform.GetComponentsInChildren<Renderer>())
+        foreach (Renderer child in objectToCutaway.transform.GetComponentsInChildren<Renderer>(true))
         {
             child.material.SetFloat("_CutDir", -cutDir);//sets all cut directions to be consistent
         }
@@ -66,27 +71,14 @@ public class ControlCutaway : MonoBehaviour
     private void xValueChanged(string _val)
     {
         cutawayPlaneXYZ.x = float.Parse(xInput.text);
-        foreach (Renderer child in objectToCutaway.transform.GetComponentsInChildren<Renderer>())
-        {
-            child.material.SetVector("_CutPlanePos", cutawayPlaneXYZ * scale);
-        }
-
     }
     private void yValueChanged(string _val)
     {
         cutawayPlaneXYZ.y = float.Parse(yInput.text);
-        foreach (Renderer child in objectToCutaway.transform.GetComponentsInChildren<Renderer>())
-        {
-            child.material.SetVector("_CutPlanePos", cutawayPlaneXYZ * scale);
-        }
     }
     private void zValueChanged(string _val)
     {
         cutawayPlaneXYZ.z = float.Parse(zInput.text);
-        foreach (Renderer child in objectToCutaway.transform.GetComponentsInChildren<Renderer>())
-        {
-            child.material.SetVector("_CutPlanePos", cutawayPlaneXYZ * scale);
-        }
     }
     private void DropdownChanged(int _val)
     {
@@ -110,7 +102,7 @@ public class ControlCutaway : MonoBehaviour
     private void ResetCutaway()
     {
         ImportedObject cutObject = ImportedObject.FindOriginalObject();
-        foreach (Renderer child in cutObject.transform.GetComponentsInChildren<Renderer>())
+        foreach (Renderer child in cutObject.transform.GetComponentsInChildren<Renderer>(true))
         {
             child.material.SetVector("_CutPlanePos", new Vector3(0,0,0));
         }

@@ -30,7 +30,7 @@ public class CutawayModel : MonoBehaviour
         if (specialCanvasController.TypeOfTransform == SpecialCanvasController.TransformType.EntireModel)
         {
             ImportedObject foundObject = ImportedObject.FindOriginalObject();
-            foreach (Renderer rend in foundObject.transform.GetComponentsInChildren<Renderer>())
+            foreach (Renderer rend in foundObject.transform.GetComponentsInChildren<Renderer>(true))
             {
                 rend.material.shader = Shader.Find("Cutaway Shader");
             }
@@ -40,7 +40,7 @@ public class CutawayModel : MonoBehaviour
         else if (specialCanvasController.TypeOfTransform == SpecialCanvasController.TransformType.SpecificComponent)
         {
             cutawayControls.objectToCutaway = specialCanvasController.ComponentToTransform;
-            foreach (Renderer rend in specialCanvasController.ComponentToTransform.transform.GetComponentsInChildren<Renderer>())
+            foreach (Renderer rend in specialCanvasController.ComponentToTransform.transform.GetComponentsInChildren<Renderer>(true))
             {
                 rend.material.shader = Shader.Find("Cutaway Shader");
             }

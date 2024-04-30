@@ -26,12 +26,12 @@ public class ChangeModelMaterial : MonoBehaviour
         //if we pass the entire model
         foreach (Transform child in  objectToTransform.transform)
         {
-            child.GetComponentInChildren<Renderer>().material.shader = materialShader;
+            child.GetComponentInChildren<Renderer>(true).material.shader = materialShader;
         }
         //if we pass a specific component
-        if(objectToTransform.GetComponentInChildren<Renderer>())
+        if(objectToTransform.GetComponentInChildren<Renderer>(true))
         {
-            objectToTransform.GetComponentInChildren<Renderer>().material.shader = materialShader;
+            objectToTransform.GetComponentInChildren<Renderer>(true).material.shader = materialShader;
         }
         cutawayControls.transform.gameObject.SetActive(false);
 
